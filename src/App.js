@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import Ham from './Ham';
-import logo from './logo.svg';
+import Quiz from './Quiz';
 import './App.css';
 
 class App extends Component {
@@ -11,11 +10,7 @@ class App extends Component {
           <h2>Do you really know every word to Hamilton?</h2>
           <p>These words only occur once in Hamilton. What words come after?</p>
         </div>
-        <pre className="App-intro">
-          {
-            ['...'].concat(Ham.getOffsetWords('dead', -3, 3).join('\n\n'), '...').join(' ')
-          }
-        </pre>
+        <Quiz />
       </div>
     );
   }

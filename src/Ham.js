@@ -5,6 +5,18 @@ const words = Lyrics;
 const wordsIsolated = removePunct(words).split(' ');
 const wordsIsolatedSanitized = removePunct(Lyrics.toLowerCase()).split(' ');
 
+String.prototype.indexOfRegex = function(regex, fromIndex){
+  var str = fromIndex ? this.substring(fromIndex) : this;
+  var match = str.match(regex);
+  return match ? str.indexOf(match[0]) + fromIndex : -1;
+}
+
+String.prototype.lastIndexOfRegex = function(regex, fromIndex){
+  var str = fromIndex ? this.substring(0, fromIndex) : this;
+  var match = str.match(regex);
+  return match ? str.lastIndexOf(match[match.length-1]) : -1;
+}
+
 function removePunct(str) {
   return str
     .replace(/[^\w\s]|_/g, ' ')
@@ -19,7 +31,7 @@ function getOffsetWords(word, offset, offset2) {
     i = words.toLowerCase().indexOf(word.toLowerCase(), i + 1);
     console.log(i);
     offsetWordCollection.push(getFirstOffsetWords(word, offset, offset2, i));
-  } while (i !== -1);
+  } while (i !== -1)
 
   return offsetWordCollection;
 }
@@ -29,15 +41,13 @@ function getFirstOffsetWords(word, offset, offset2, startPosition) {
 
   let endIndex = i + word.length;
   while (offset2 > 0) {
-    // console.log(offset2, endIndex);
-    endIndex = words.indexOf(' ', endIndex + 1);
+    endIndex = words.indexOfRegex(/\s/, endIndex + 1);
     offset2--;
   }
 
   let startIndex = i;
   while (offset <= 0) {
-    // console.log(offset, startIndex);
-    startIndex = words.lastIndexOf(' ', startIndex - 1);
+    startIndex = words.lastIndexOfRegex(/\s/, startIndex);
     offset++;
   }
 
