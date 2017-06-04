@@ -53,35 +53,45 @@ class Quiz extends Component {
     this.setState(prevState => obj);
   }
 
+  renderDevControls() {
+    if (JSON.parse(localStorage.devMode || false)) {
+      return (
+        <div>
+          <input
+             type="range"
+             value={this.state.wordFrequency}
+             min="1"
+             max="50"
+             onInput={this.handleRangeChange.bind(this, "wordFrequency")}
+             step="1" />
+          <p>{this.state.wordFrequency}</p>
+          <input
+             type="range"
+             value={this.state.wordsBefore}
+             min="0"
+             max="10"
+             onInput={this.handleRangeChange.bind(this, "wordsBefore")}
+             step="1" />
+          <p>{this.state.wordsBefore}</p>
+          <input
+             type="range"
+             value={this.state.wordsAfter}
+             min="0"
+             max="10"
+             onInput={this.handleRangeChange.bind(this, "wordsAfter")}
+             step="1" />
+          <p>{this.state.wordsAfter}</p>
+        </div>
+      );
+    }
+  }
+
   render() {
     return (
       <div className="Quiz">
         <button onClick={this.handleClick}>Next Word</button>
         <br />
-        <input
-           type="range"
-           value={this.state.wordFrequency}
-           min="1"
-           max="50"
-           onInput={this.handleRangeChange.bind(this, "wordFrequency")}
-           step="1" />
-        <p>{this.state.wordFrequency}</p>
-        <input
-           type="range"
-           value={this.state.wordsBefore}
-           min="0"
-           max="10"
-           onInput={this.handleRangeChange.bind(this, "wordsBefore")}
-           step="1" />
-        <p>{this.state.wordsBefore}</p>
-        <input
-           type="range"
-           value={this.state.wordsAfter}
-           min="0"
-           max="10"
-           onInput={this.handleRangeChange.bind(this, "wordsAfter")}
-           step="1" />
-        <p>{this.state.wordsAfter}</p>
+        {this.renderDevControls()}
         <h2>{this.state.word}</h2>
 
         <pre className="json">{
