@@ -14,7 +14,7 @@ class Quiz extends Component {
       wordFrequency: 1,
       wordsBefore: 0,
       wordsAfter: 0,
-      userAnswer: "",
+      userAnswer: '',
     };
 
     this.addHint = this.addHint.bind(this);
@@ -33,6 +33,7 @@ class Quiz extends Component {
       wordsBefore: 0,
       wordsAfter: 0,
       word: words[i],
+      userAnswer: ''
     }));
   }
 
