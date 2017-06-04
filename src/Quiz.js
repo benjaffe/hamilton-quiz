@@ -10,15 +10,15 @@ class Quiz extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      word: 'Hamilton',
+      word: 'spies',
       wordFrequency: 1,
       wordsBefore: 0,
       wordsAfter: 0,
-      userAnswer: "your answer here",
+      userAnswer: "",
     };
 
+    this.addHint = this.addHint.bind(this);
     this.nextWord = this.nextWord.bind(this);
-    this.handleClick = this.handleClick.bind(this);
   }
 
   nextWord() {
@@ -36,8 +36,10 @@ class Quiz extends Component {
     }));
   }
 
-  handleClick() {
-    this.nextWord()
+  addHint() {
+    this.setState(prevState => ({
+      wordsBefore: this.state.wordsBefore + 1
+    }));
   }
 
   handleRangeChange(name, event) {
@@ -53,7 +55,18 @@ class Quiz extends Component {
   }
 
   isMatch() {
-    return Ham.isAdjacentStringMatching(this.state.word, this.state.userAnswer);
+    return Ham.isAdjacentStringMatching(
+      this.state.word,
+      this.state.userAnswer,
+      this.state.wordsBefore * -1,
+      this.state.wordsAfter,
+    );
+  }
+
+  hintButton() {
+    if (!this.isMatch()) {
+      return <button onClick={this.addHint}>give me a hint</button>
+    }
   }
 
   renderDevControls() {
@@ -84,6 +97,9 @@ class Quiz extends Component {
              onInput={this.handleRangeChange.bind(this, "wordsAfter")}
              step="1" />
           <p>{this.state.wordsAfter}</p>
+          <pre>
+            {"State:\n" + JSON.stringify(this.state, null, 2)}
+          </pre>
         </div>
       );
     }
@@ -107,14 +123,12 @@ class Quiz extends Component {
         <input
           type="text"
           value={this.state.userAnswer}
+          placeholder="Your answer goes here"
           onInput={this.handleChange.bind(this, "userAnswer")}
         />
 
-        <p>{"" + this.isMatch()}</p>
-        <button onClick={this.handleClick}>{this.isMatch() ? 'YAYYYYYYY' : 'I give up'}</button>
-        <p>{this.state.userAnswer}</p>
-        <hr />
-        <pre className="json">{/*JSON.stringify(Ham.wordsTokenized.slice(0,1000), null, 2)*/}</pre>
+        {this.hintButton()}
+        <button onClick={this.nextWord}>{this.isMatch() ? 'YAYYYYYYY' : 'I give up'}</button>
       </div>
     );
   }
