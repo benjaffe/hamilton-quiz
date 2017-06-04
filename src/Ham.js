@@ -103,8 +103,26 @@ function getAdjacentStrings(word) {
   return [].concat.apply([], arrs);
 }
 
+/**
+ * checks to see if the passed word is adjacent to any instance of the chosen word
+ * @param  {str}  word               the chosen word
+ * @param  {str}  adjacentCandidate  the word to test
+ * @return {bool}                    true if a match, false if not
+ */
+function isAdjacentStringMatching(word, adjacentCandidate) {
+  var candidate = _removePunct(adjacentCandidate).toLowerCase();
+  var adjacentStrings = getAdjacentStrings(word);
+  for (let i = 0; i < adjacentStrings.length; i++) {
+    if (adjacentStrings[i].toLowerCase() === candidate) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export default {
   getWordsWithFrequency,
   getStringsWithContext,
   getAdjacentStrings,
+  isAdjacentStringMatching,
 };
