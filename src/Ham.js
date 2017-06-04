@@ -95,12 +95,15 @@ function getStringsWithContext(word, wordsBefore, wordsAfter) {
 
 /**
  * Returns an array of adjacent words
- * @param  {str} word  [description]
+ * @param  {str} word    the chosen word
+ * @param  {int} before  optional, used to override in case our chosen word is actually a phrase
+ * @param  {int} after   optional, used to override in case our chosen word is actually a phrase
  * @return {arr<obj>}  This is an array of word objects
  */
-function getAdjacentStrings(word) {
-  var arrs = _getWordsInContext(word, -1, 1);
-  return [].concat.apply([], arrs);
+function getAdjacentStringCollections(word, before, after) {
+  var arrs = _getWordsInContext(word, before || -1, after || 1);
+  var arrsWithWordsRemoved = arrs.map(arr => [arr[0], arr[arr.length - 1]]);
+  return arrsWithWordsRemoved;
 }
 
 /**
@@ -109,10 +112,12 @@ function getAdjacentStrings(word) {
  * @param  {str}  adjacentCandidate  the word to test
  * @return {bool}                    true if a match, false if not
  */
-function isAdjacentStringMatching(word, adjacentCandidate) {
+function isAdjacentStringMatching(word, adjacentCandidate, before, after) {
   var candidate = _removePunct(adjacentCandidate).toLowerCase().trim();
-  var adjacentStrings = getAdjacentStrings(word).map(obj => obj.value);
-  console.log(adjacentStrings)
+  var adjacentStringCollections = getAdjacentStringCollections(word, before, after);
+  var adjacentStringCollectionsFlattened = [].concat.apply([], adjacentStringCollections);
+  var adjacentStrings = adjacentStringCollectionsFlattened.map(obj => obj.value);
+  console.log(adjacentStrings);
   for (let i = 0; i < adjacentStrings.length; i++) {
     if (adjacentStrings[i].toLowerCase().trim() === candidate) {
       return true;
@@ -124,6 +129,6 @@ function isAdjacentStringMatching(word, adjacentCandidate) {
 export default {
   getWordsWithFrequency,
   getStringsWithContext,
-  getAdjacentStrings,
+  getAdjacentStringCollections,
   isAdjacentStringMatching,
 };
