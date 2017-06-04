@@ -1,115 +1,89 @@
 import Lyrics from './data/All_Lyrics_No_Speakers';
 import LyricsSpeakers from './data/All_Lyrics_Speakers';
+import Tokenizer from 'tokenize-text';
+
+const tokenize = new Tokenizer();
 
 const words = Lyrics;
-const wordsIsolated = _removePunct(words).split(' ');
 const wordsIsolatedSanitized = _removePunct(Lyrics.toLowerCase()).split(' ');
+const wordsTokenized = tokenize.words()(words);
 
-String.prototype.indexOfRegex = function(regex, fromIndex){
-  var str = fromIndex ? this.substring(fromIndex) : this;
-  var match = str.match(regex);
-  return match ? str.indexOf(match[0]) + fromIndex : -1;
-}
-
-String.prototype.lastIndexOfRegex = function(regex, fromIndex){
-  var str = fromIndex ? this.substring(0, fromIndex) : this;
-  var match = str.match(regex);
-  return match ? str.lastIndexOf(match[match.length-1]) : -1;
-}
-
+/**
+ * strip a string of punctuation
+ * @param  {string} str original string
+ * @return {string}     trimmed string with no punctuation
+ */
 function _removePunct(str) {
   return str
     .replace(/[^\w\s]|_/g, ' ')
     .replace(/\s+/g, ' ');
 }
 
-
-
-function getOffsetWords(word, offset, offset2, frequency) {
-  let i = -1;
-  let offsetWordCollection = [];
-
-  if (!word) console.log(arguments);
-
-  do {
-    i = words.toLowerCase().indexOf(word.toLowerCase(), i + 1);
-    if (i === -1) continue;
-
-    offsetWordCollection.push(getFirstOffsetWords(word, offset, offset2, i + 1));
-  } while (i !== -1);
-
-  return offsetWordCollection;
+/**
+ * gets unique counts of string
+ * @param  {Array<str>} strs array of strings
+ * @return {Object}          key is the string value, values is the string frequency
+ */
+function _getWordsCounts(strs) {
+  return strs.reduce((acc, str) => {
+    acc[str] = acc[str] ? acc[str] + 1 : 1;
+    return acc;
+  }, {});
 }
 
-function getFirstOffsetWords(word, offset, offset2, startPosition) {
-  console.log(word, offset, offset2, startPosition);
-
-  let regexp = new RegExp('[^\\w](' + word.toLowerCase() + ')[^\\w]', 'ig');
-  let i = words.toLowerCase().indexOfRegex(regexp, startPosition);
-
-  let endIndex = i + word.length;
-  while (offset2 > 0) {
-    endIndex = words.indexOfRegex(/\s/, endIndex + 1);
-    offset2--;
-  }
-
-  let startIndex = i;
-  while (offset < 0) {
-    startIndex = words.lastIndexOfRegex(/\s/, startIndex);
-    offset++;
-  }
-
-  return words.slice(startIndex, endIndex + 1).trim();
+function _tokensToStr(tokens) {
+  let lastToken = tokens[tokens.length - 1];
+  let first = tokens[0].index;
+  let last = lastToken.index + lastToken.offset;
+  return Lyrics.slice(first, last);
 }
 
-
-
-// function getOffsetWordArray(word, offset, offset2) {
-//   let i = wordsIsolatedSanitized.findIndex(w => w === word.toLowerCase());
-
-//   let words = [];
-//   // previous word(s)
-//   while (offset < 0) {
-//     words.push(wordsIsolatedSanitized[i + offset++]);
-//   }
-
-//   // the original word
-//   words.push(wordsIsolatedSanitized[i + offset++]);
-
-//   // next word(s)
-//   if (offset2) {
-//     while (offset < offset2) {
-//       words.push(wordsIsolatedSanitized[i + offset++]);
-//     }
-//   }
-
-//   return words;
-// }
-
+/**
+ * get words of a given frequency
+ * @param  {number} num word frequency
+ * @return {array<str>}     list of words with given frequency
+ */
 function getWordsWithFrequency(num) {
-  console.log('getting words with frequency ' + num);
-  let counts = getWordsCounts();
+  if (num <= 0 || parseInt(num) !== num) {
+    throw new Error('`frequency` must be a postive int');
+  }
+  let counts = _getWordsCounts(wordsIsolatedSanitized);
   return Object.keys(counts).filter(key => counts[key] === num);
 }
 
-function getWordsCounts() {
-  let wordCounts = wordsIsolated.reduce((acc, word) => {
-    let wordSanitized = word.toLowerCase();
-    acc[wordSanitized] = acc[wordSanitized] ? acc[wordSanitized] + 1 : 1;
+
+function getWordsInContext(word, wordsBefore, wordsAfter) {
+  if (!word) throw new Error('getWordsInContext() needs a word passed in');
+  if (wordsBefore > wordsAfter) throw new Error('wordsBefore must be lower than wordsAfter');
+  let offsets = [];
+  for (let i = wordsBefore; i <= wordsAfter; i++) {
+    offsets.push(i);
+  }
+
+  let tokensFiltered = wordsTokenized.reduce((acc, token, i) => {
+    if (token.value.toLowerCase() === word.toLowerCase()) {
+      token.tokenIndex = i;
+      acc.push(token);
+    }
     return acc;
-  }, {});
+  }, []);
 
-  return wordCounts;
+  let tokensFilteredWithContext = tokensFiltered.map(token => {
+    return offsets.map(offset => wordsTokenized[token.tokenIndex + offset]);
+  });
+
+  return tokensFilteredWithContext;
 }
 
-function getLyrics() {
-  return Lyrics;
+function getStringsWithContext(word, wordsBefore, wordsAfter) {
+  let tokensCollections = getWordsInContext(word, wordsBefore, wordsAfter);
+  return tokensCollections.map(_tokensToStr).join('\n\n');
 }
+
+
 
 export default {
-  getLyrics,
   getWordsWithFrequency,
-  getWordsCounts,
-  // getOffsetWordArray,
-  getOffsetWords,
+  wordsTokenized,
+  getStringsWithContext,
 };
