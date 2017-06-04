@@ -66,7 +66,13 @@ class Quiz extends Component {
 
   hintButton() {
     if (!this.isMatch()) {
-      return <button onClick={this.addHint}>give me a hint</button>
+      return (
+        <button
+          className="btn"
+          onClick={this.addHint}>
+          give me a hint
+        </button>
+      );
     }
   }
 
@@ -114,22 +120,28 @@ class Quiz extends Component {
         <h2>{this.state.word}</h2>
 
         <pre className="json">{
+          (this.isMatch() ? '...' : '') +
           Ham.getStringsWithContext(
             this.state.word,
-            this.state.wordsBefore * -1,
-            this.state.wordsAfter
-          )
+            this.isMatch() ? -5 : this.state.wordsBefore * -1,
+            this.isMatch() ? 5 : this.state.wordsAfter
+          ) + (this.isMatch() ? '...' : '')
         }</pre>
 
         <input
+          className="answerField"
           type="text"
           value={this.state.userAnswer}
           placeholder="Your answer goes here"
           onInput={this.handleChange.bind(this, "userAnswer")}
         />
-
+        <br />
         {this.hintButton()}
-        <button onClick={this.nextWord}>{this.isMatch() ? 'YAYYYYYYY' : 'I give up'}</button>
+        <button
+          className="btn"
+          onClick={this.nextWord}>
+          {this.isMatch() ? 'Congratulations!' : 'I give up'}
+        </button>
       </div>
     );
   }

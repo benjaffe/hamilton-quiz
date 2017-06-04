@@ -1,3 +1,14 @@
 .json {
   text-align: left;
 }
+
+.answerField {
+  font-size: 16px;
+  width: 15em;
+  margin-bottom: 5px;
+}
+
+.btn {
+  font-size: 14px;
+  margin: 5px;
+}
