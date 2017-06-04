@@ -95,8 +95,8 @@ function getStringsWithContext(word, wordsBefore, wordsAfter) {
 
 /**
  * Returns an array of adjacent words
- * @param  {str} word [description]
- * @return {[type]}      [description]
+ * @param  {str} word  [description]
+ * @return {arr<obj>}  This is an array of word objects
  */
 function getAdjacentStrings(word) {
   var arrs = _getWordsInContext(word, -1, 1);
@@ -110,10 +110,11 @@ function getAdjacentStrings(word) {
  * @return {bool}                    true if a match, false if not
  */
 function isAdjacentStringMatching(word, adjacentCandidate) {
-  var candidate = _removePunct(adjacentCandidate).toLowerCase();
-  var adjacentStrings = getAdjacentStrings(word);
+  var candidate = _removePunct(adjacentCandidate).toLowerCase().trim();
+  var adjacentStrings = getAdjacentStrings(word).map(obj => obj.value);
+  console.log(adjacentStrings)
   for (let i = 0; i < adjacentStrings.length; i++) {
-    if (adjacentStrings[i].toLowerCase() === candidate) {
+    if (adjacentStrings[i].toLowerCase().trim() === candidate) {
       return true;
     }
   }

@@ -108,7 +108,7 @@ class Quiz extends Component {
           onInput={this.handleChange.bind(this, "userAnswer")}
         />
 
-        <p>{this.state.match+""}</p>
+        <p>{"" + Ham.isAdjacentStringMatching(this.state.word, this.state.userAnswer)}</p>
         <p>{this.state.userAnswer}</p>
         <hr />
         <pre className="json">{/*JSON.stringify(Ham.wordsTokenized.slice(0,1000), null, 2)*/}</pre>
