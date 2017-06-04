@@ -15,7 +15,6 @@ class Quiz extends Component {
       wordsBefore: 0,
       wordsAfter: 0,
       userAnswer: "your answer here",
-      match: false,
     };
 
     this.nextWord = this.nextWord.bind(this);
@@ -51,6 +50,10 @@ class Quiz extends Component {
     var obj = {};
     obj[name] = event.target.value;
     this.setState(prevState => obj);
+  }
+
+  isMatch() {
+    return Ham.isAdjacentStringMatching(this.state.word, this.state.userAnswer);
   }
 
   renderDevControls() {
@@ -89,7 +92,6 @@ class Quiz extends Component {
   render() {
     return (
       <div className="Quiz">
-        <button onClick={this.handleClick}>Next Word</button>
         <br />
         {this.renderDevControls()}
         <h2>{this.state.word}</h2>
@@ -108,7 +110,8 @@ class Quiz extends Component {
           onInput={this.handleChange.bind(this, "userAnswer")}
         />
 
-        <p>{"" + Ham.isAdjacentStringMatching(this.state.word, this.state.userAnswer)}</p>
+        <p>{"" + this.isMatch()}</p>
+        <button onClick={this.handleClick}>{this.isMatch() ? 'YAYYYYYYY' : 'I give up'}</button>
         <p>{this.state.userAnswer}</p>
         <hr />
         <pre className="json">{/*JSON.stringify(Ham.wordsTokenized.slice(0,1000), null, 2)*/}</pre>
