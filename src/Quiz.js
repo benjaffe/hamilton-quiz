@@ -14,6 +14,8 @@ class Quiz extends Component {
       wordFrequency: 1,
       wordsBefore: 0,
       wordsAfter: 0,
+      userAnswer: "your answer here",
+      match: false,
     };
 
     this.nextWord = this.nextWord.bind(this);
@@ -39,9 +41,15 @@ class Quiz extends Component {
     this.nextWord()
   }
 
-  handleChange(name, event) {
+  handleRangeChange(name, event) {
     var obj = {};
     obj[name] = event.target.value * 1;
+    this.setState(prevState => obj);
+  }
+
+  handleChange(name, event) {
+    var obj = {};
+    obj[name] = event.target.value;
     this.setState(prevState => obj);
   }
 
@@ -55,7 +63,7 @@ class Quiz extends Component {
            value={this.state.wordFrequency}
            min="1"
            max="50"
-           onInput={this.handleChange.bind(this, "wordFrequency")}
+           onInput={this.handleRangeChange.bind(this, "wordFrequency")}
            step="1" />
         <p>{this.state.wordFrequency}</p>
         <input
@@ -63,7 +71,7 @@ class Quiz extends Component {
            value={this.state.wordsBefore}
            min="0"
            max="10"
-           onInput={this.handleChange.bind(this, "wordsBefore")}
+           onInput={this.handleRangeChange.bind(this, "wordsBefore")}
            step="1" />
         <p>{this.state.wordsBefore}</p>
         <input
@@ -71,7 +79,7 @@ class Quiz extends Component {
            value={this.state.wordsAfter}
            min="0"
            max="10"
-           onInput={this.handleChange.bind(this, "wordsAfter")}
+           onInput={this.handleRangeChange.bind(this, "wordsAfter")}
            step="1" />
         <p>{this.state.wordsAfter}</p>
         <h2>{this.state.word}</h2>
@@ -83,6 +91,15 @@ class Quiz extends Component {
             this.state.wordsAfter
           )
         }</pre>
+
+        <input
+          type="text"
+          value={this.state.userAnswer}
+          onInput={this.handleChange.bind(this, "userAnswer")}
+        />
+
+        <p>{this.state.match+""}</p>
+        <p>{this.state.userAnswer}</p>
         <hr />
         <pre className="json">{/*JSON.stringify(Ham.wordsTokenized.slice(0,1000), null, 2)*/}</pre>
       </div>
