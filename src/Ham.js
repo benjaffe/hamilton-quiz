@@ -101,7 +101,7 @@ function getStringsWithContext(word, wordsBefore, wordsAfter) {
  * @return {arr<obj>}  This is an array of word objects
  */
 function getAdjacentStringCollections(word, before, after) {
-  var arrs = _getWordsInContext(word, before || -1, after || 1);
+  var arrs = _getWordsInContext(word, before - 1 || -1, after + 1 || 1);
   var arrsWithWordsRemoved = arrs.map(arr => [arr[0], arr[arr.length - 1]]);
   return arrsWithWordsRemoved;
 }
@@ -110,6 +110,8 @@ function getAdjacentStringCollections(word, before, after) {
  * checks to see if the passed word is adjacent to any instance of the chosen word
  * @param  {str}  word               the chosen word
  * @param  {str}  adjacentCandidate  the word to test
+ * @param  {int}  before             optional, used to override in case our chosen word is actually a phrase
+ * @param  {int}  after              optional, used to override in case our chosen word is actually a phrase
  * @return {bool}                    true if a match, false if not
  */
 function isAdjacentStringMatching(word, adjacentCandidate, before, after) {
