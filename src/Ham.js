@@ -119,7 +119,7 @@ function isAdjacentStringMatching(word, adjacentCandidate, before, after) {
   var adjacentStringCollections = getAdjacentStringCollections(word, before, after);
   var adjacentStringCollectionsFlattened = [].concat.apply([], adjacentStringCollections);
   var adjacentStrings = adjacentStringCollectionsFlattened.map(obj => obj.value);
-  console.log(adjacentStrings);
+
   for (let i = 0; i < adjacentStrings.length; i++) {
     if (adjacentStrings[i].toLowerCase().trim() === candidate) {
       return true;

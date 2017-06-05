@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import Ham from './Ham';
 import './Quiz.css';
 
-function addEllipses(str) {
-  return `... ${str} ...`;
+function addEllipsesIf(str, conditional) {
+  return conditional ? `... ${str} ...` : str;
 }
 
 class Quiz extends Component {
@@ -20,6 +20,7 @@ class Quiz extends Component {
     this.addHint = this.addHint.bind(this);
     this.nextWord = this.nextWord.bind(this);
     this.focusInput = this.focusInput.bind(this);
+    this.focusCongratsButton = this.focusCongratsButton.bind(this);
   }
 
   nextWord() {
@@ -64,6 +65,10 @@ class Quiz extends Component {
     this.textInput.focus();
   }
 
+  focusCongratsButton() {
+    this.congratsButton.focus();
+  }
+
   isMatch() {
     return Ham.isAdjacentStringMatching(
       this.state.word,
@@ -76,11 +81,12 @@ class Quiz extends Component {
   hintButton() {
     if (!this.isMatch()) {
       return (
-        <button
+        <input
+          type="button"
           className="btn"
-          onClick={this.addHint}>
-          give me a hint
-        </button>
+          onClick={this.addHint}
+          value="give me a hint"
+        />
       );
     }
   }
@@ -122,6 +128,12 @@ class Quiz extends Component {
   }
 
   render() {
+    const adjacentWordsToShow = 5;
+    let isMatch = this.isMatch();
+
+    if (isMatch) {
+      setTimeout(this.focusCongratsButton, 1); // sry
+    }
     return (
       <div className="Quiz">
         <br />
@@ -129,12 +141,14 @@ class Quiz extends Component {
         <h2>{this.state.word}</h2>
 
         <pre className="json">{
-          (this.isMatch() ? '...' : '') +
-          Ham.getStringsWithContext(
-            this.state.word,
-            this.isMatch() ? -5 : this.state.wordsBefore * -1,
-            this.isMatch() ? 5 : this.state.wordsAfter
-          ) + (this.isMatch() ? '...' : '')
+          addEllipsesIf(
+            Ham.getStringsWithContext(
+              this.state.word,
+              isMatch ? -1 * adjacentWordsToShow : this.state.wordsBefore * -1,
+              isMatch ? adjacentWordsToShow : this.state.wordsAfter
+            ),
+            isMatch
+          )
         }</pre>
 
         <input
@@ -148,11 +162,13 @@ class Quiz extends Component {
         />
         <br />
         {this.hintButton()}
-        <button
+        <input
+          type="button"
+          ref={btn => { this.congratsButton = btn; }}
           className="btn"
-          onClick={this.nextWord}>
-          {this.isMatch() ? 'Congratulations!' : 'I give up'}
-        </button>
+          onClick={this.nextWord}
+          value={isMatch ? 'Congratulations!' : 'I give up'}
+        />
       </div>
     );
   }
