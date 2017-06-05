@@ -19,6 +19,7 @@ class Quiz extends Component {
 
     this.addHint = this.addHint.bind(this);
     this.nextWord = this.nextWord.bind(this);
+    this.focusInput = this.focusInput.bind(this);
   }
 
   nextWord() {
@@ -35,12 +36,16 @@ class Quiz extends Component {
       word: words[i],
       userAnswer: ''
     }));
+
+    this.focusInput();
   }
 
   addHint() {
     this.setState(prevState => ({
       wordsBefore: this.state.wordsBefore + 1
     }));
+
+    this.focusInput();
   }
 
   handleRangeChange(name, event) {
@@ -55,12 +60,16 @@ class Quiz extends Component {
     this.setState(prevState => obj);
   }
 
+  focusInput() {
+    this.textInput.focus();
+  }
+
   isMatch() {
     return Ham.isAdjacentStringMatching(
       this.state.word,
       this.state.userAnswer,
       this.state.wordsBefore * -1,
-      this.state.wordsAfter,
+      this.state.wordsAfter
     );
   }
 
@@ -129,6 +138,8 @@ class Quiz extends Component {
         }</pre>
 
         <input
+          autoFocus
+          ref={input => { this.textInput = input; }}
           className="answerField"
           type="text"
           value={this.state.userAnswer}
