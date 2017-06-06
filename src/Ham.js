@@ -15,6 +15,7 @@ const _wordsIsolatedSanitized = _wordsTokenized.map(token => token.value);
  */
 function _removePunct(str) {
   return str
+    .replace(/[’']/, '')
     .replace(/[^\w\s]|_/g, ' ')
     .replace(/\s+/g, ' ');
 }
@@ -121,7 +122,7 @@ function isAdjacentStringMatching(word, adjacentCandidate, before, after) {
   var adjacentStrings = adjacentStringCollectionsFlattened.map(obj => obj.value);
 
   for (let i = 0; i < adjacentStrings.length; i++) {
-    if (adjacentStrings[i].toLowerCase().trim() === candidate) {
+    if (_removePunct(adjacentStrings[i]).toLowerCase().trim() === candidate) {
       return true;
     }
   }
