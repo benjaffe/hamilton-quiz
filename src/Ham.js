@@ -5,6 +5,8 @@ import levenshtein from 'levenshtein-edit-distance';
 
 const tokenize = new Tokenizer();
 
+const NORMALIZE_CASE = true;
+
 const words = Lyrics;
 const _wordsTokenized = tokenize.words()(words);
 const _wordsIsolatedSanitized = _wordsTokenized.map(token => token.value);
@@ -133,7 +135,7 @@ function _doStringsMatch(origStr1, origStr2) {
   let s1 = _removePunct(origStr1).trim();
   let s2 = _removePunct(origStr2).trim();
   let acceptableEditDistance = Math.floor(Math.max(s1.length, s2.length) / 4);
-  return (levenshtein(s1, s2) <= acceptableEditDistance);
+  return (levenshtein(s1, s2, NORMALIZE_CASE) <= acceptableEditDistance);
 }
 
 export default {
