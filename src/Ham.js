@@ -1,6 +1,7 @@
 import Lyrics from './data/All_Lyrics_No_Speakers';
 import LyricsSpeakers from './data/All_Lyrics_Speakers';
 import Tokenizer from 'tokenize-text';
+import levenshtein from 'levenshtein-edit-distance';
 
 const tokenize = new Tokenizer();
 
@@ -116,17 +117,23 @@ function getAdjacentStringCollections(word, before, after) {
  * @return {bool}                    true if a match, false if not
  */
 function isAdjacentStringMatching(word, adjacentCandidate, before, after) {
-  var candidate = _removePunct(adjacentCandidate).toLowerCase().trim();
   var adjacentStringCollections = getAdjacentStringCollections(word, before, after);
   var adjacentStringCollectionsFlattened = [].concat.apply([], adjacentStringCollections);
   var adjacentStrings = adjacentStringCollectionsFlattened.map(obj => obj.value);
 
   for (let i = 0; i < adjacentStrings.length; i++) {
-    if (_removePunct(adjacentStrings[i]).toLowerCase().trim() === candidate) {
+    if (_doStringsMatch(adjacentStrings[i], adjacentCandidate)) {
       return true;
     }
   }
   return false;
+}
+
+function _doStringsMatch(origStr1, origStr2) {
+  let s1 = _removePunct(origStr1).trim();
+  let s2 = _removePunct(origStr2).trim();
+  let acceptableEditDistance = Math.floor(Math.max(s1.length, s2.length) / 4);
+  return (levenshtein(s1, s2) <= acceptableEditDistance);
 }
 
 export default {
