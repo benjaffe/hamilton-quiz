@@ -10,7 +10,7 @@ class Quiz extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      word: 'spies',
+      word: 'fightin’',
       wordFrequency: 1,
       wordsBefore: 0,
       wordsAfter: 0,
@@ -175,7 +175,7 @@ class Quiz extends Component {
         {this.renderDevControls()}
         <h2>{this.state.word}</h2>
 
-        <pre className="json">{
+        <pre className="lyrics">{
           addEllipsesIf(
             Ham.getStringsWithContext(
               this.state.word,

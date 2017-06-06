@@ -5,11 +5,11 @@ import Tokenizer from 'tokenize-text';
 const tokenize = new Tokenizer();
 
 const words = Lyrics;
-const wordsIsolatedSanitized = _removePunct(Lyrics.toLowerCase()).split(' ');
 const _wordsTokenized = tokenize.words()(words);
+const _wordsIsolatedSanitized = _wordsTokenized.map(token => token.value);
 
 /**
- * strip a string of punctuation
+ * strip a string of all non-word characters, joining words with a single space
  * @param  {string} str original string
  * @return {string}     trimmed string with no punctuation
  */
@@ -47,7 +47,7 @@ function getWordsWithFrequency(num) {
   if (num <= 0 || parseInt(num) !== num) {
     throw new Error('`frequency` must be a postive int');
   }
-  let counts = _getWordsCounts(wordsIsolatedSanitized);
+  let counts = _getWordsCounts(_wordsIsolatedSanitized);
   return Object.keys(counts).filter(key => counts[key] === num);
 }
 
