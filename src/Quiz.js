@@ -18,6 +18,7 @@ class Quiz extends Component {
     };
 
     this.addHint = this.addHint.bind(this);
+    this.giveUp = this.giveUp.bind(this);
     this.nextWord = this.nextWord.bind(this);
     this.focusInput = this.focusInput.bind(this);
     this.focusCongratsButton = this.focusCongratsButton.bind(this);
@@ -35,10 +36,17 @@ class Quiz extends Component {
       wordsBefore: 0,
       wordsAfter: 0,
       word: words[i],
-      userAnswer: ''
+      userAnswer: '',
+      showAnswer: false
     }));
 
     this.focusInput();
+  }
+
+  giveUp() {
+    this.setState({
+      showAnswer: true
+    });
   }
 
   addHint() {
@@ -58,7 +66,13 @@ class Quiz extends Component {
   handleChange(name, event) {
     var obj = {};
     obj[name] = event.target.value;
-    this.setState(prevState => obj);
+    this.setState(prevState => obj, () => {
+      if (this.isMatch()) {
+        this.setState({
+          showAnswer: true
+        });
+      }
+    });
   }
 
   focusInput() {
@@ -78,17 +92,37 @@ class Quiz extends Component {
     );
   }
 
-  hintButton() {
-    if (!this.isMatch()) {
-      return (
-        <input
-          type="button"
-          className="btn"
-          onClick={this.addHint}
-          value="give me a hint"
-        />
-      );
-    }
+  renderButtons(isMatch) {
+    return (
+      <div>
+        {!isMatch && !this.state.showAnswer ? (
+          <input
+            type="button"
+            className="btn"
+            onClick={this.addHint}
+            value="Hint Please"
+          />
+        ) : null}
+
+        {this.state.showAnswer ? (
+          <input
+            type="button"
+            ref={btn => { this.congratsButton = btn; }}
+            className="btn"
+            onClick={this.nextWord}
+            value={isMatch ? 'Congratulations!' : 'Next Word'}
+          />
+        ) : (
+          <input
+            type="button"
+            ref={btn => { this.congratsButton = btn; }}
+            className="btn"
+            onClick={this.giveUp}
+            value={'I Give Up'}
+          />
+        )}
+      </div>
+    );
   }
 
   renderDevControls() {
@@ -130,6 +164,7 @@ class Quiz extends Component {
   render() {
     const adjacentWordsToShow = 5;
     let isMatch = this.isMatch();
+    let showAnswer = isMatch || this.state.showAnswer;
 
     if (isMatch) {
       setTimeout(this.focusCongratsButton, 1); // sry
@@ -144,10 +179,10 @@ class Quiz extends Component {
           addEllipsesIf(
             Ham.getStringsWithContext(
               this.state.word,
-              isMatch ? -1 * adjacentWordsToShow : this.state.wordsBefore * -1,
-              isMatch ? adjacentWordsToShow : this.state.wordsAfter
+              showAnswer ? -1 * adjacentWordsToShow : this.state.wordsBefore * -1,
+              showAnswer ? adjacentWordsToShow : this.state.wordsAfter
             ),
-            isMatch
+            showAnswer
           )
         }</pre>
 
@@ -161,14 +196,7 @@ class Quiz extends Component {
           onInput={this.handleChange.bind(this, "userAnswer")}
         />
         <br />
-        {this.hintButton()}
-        <input
-          type="button"
-          ref={btn => { this.congratsButton = btn; }}
-          className="btn"
-          onClick={this.nextWord}
-          value={isMatch ? 'Congratulations!' : 'I give up'}
-        />
+        {this.renderButtons(isMatch)}
       </div>
     );
   }
