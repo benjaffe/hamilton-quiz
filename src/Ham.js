@@ -144,9 +144,13 @@ function _doStringsMatch(origStr1, origStr2) {
   let s2 = _removePunct(origStr2).toLowerCase().trim();
   let s1Alt = _getAltStr(s1);
   let s2Alt = _getAltStr(s2);
-  let acceptableEditDistance = Math.floor(Math.max(s1.length, s2.length) / 4);
+  let acceptableEditDistance = Math.max(s1.length, s2.length) < 5 ? 0 : 1;
+  let withinEditDistance = (
+    levenshtein(s1, s2) <= acceptableEditDistance &&
+    s1.slice(-1) === s2.slice(-1)
+  );
   let isMatching = (
-    levenshtein(s1, s2) <= acceptableEditDistance ||
+    withinEditDistance ||
     s1Alt === s2 ||
     s1Alt === s2Alt
   );
