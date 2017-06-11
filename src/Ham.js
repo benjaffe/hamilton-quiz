@@ -1,12 +1,12 @@
 import Lyrics from './data/All_Lyrics_No_Speakers';
 import LyricsSpeakers from './data/All_Lyrics_Speakers';
+import CONSTANTS from './constants';
 import Tokenizer from 'tokenize-text';
 import levenshtein from 'levenshtein-edit-distance';
 
+const {ALT_STR_MAP} = CONSTANTS;
+
 const tokenize = new Tokenizer();
-
-const NORMALIZE_CASE = true;
-
 const words = Lyrics;
 const _wordsTokenized = tokenize.words()(words);
 const _wordsIsolatedSanitized = _wordsTokenized.map(token => token.value);
@@ -130,12 +130,27 @@ function isAdjacentStringMatching(word, adjacentCandidate, before, after) {
   }
   return false;
 }
+/**
+ * Looks up the string in the alternate string map
+ * @param  {string} str the input string
+ * @return {string}     the replaced string (should properly be an array of options)
+ */
+function _getAltStr(str) {
+  return ALT_STR_MAP[str] || str;
+}
 
 function _doStringsMatch(origStr1, origStr2) {
-  let s1 = _removePunct(origStr1).trim();
-  let s2 = _removePunct(origStr2).trim();
+  let s1 = _removePunct(origStr1).toLowerCase().trim();
+  let s2 = _removePunct(origStr2).toLowerCase().trim();
+  let s1Alt = _getAltStr(s1);
+  let s2Alt = _getAltStr(s2);
   let acceptableEditDistance = Math.floor(Math.max(s1.length, s2.length) / 4);
-  return (levenshtein(s1, s2, NORMALIZE_CASE) <= acceptableEditDistance);
+  let isMatching = (
+    levenshtein(s1, s2) <= acceptableEditDistance ||
+    s1Alt === s2 ||
+    s1Alt === s2Alt
+  );
+  return isMatching;
 }
 
 export default {
