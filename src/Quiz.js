@@ -15,6 +15,8 @@ class Quiz extends Component {
       wordsBefore: 0,
       wordsAfter: 0,
       userAnswer: '',
+      score: 0,
+      questionsAnswered: 0,
     };
 
     this.addHint = this.addHint.bind(this);
@@ -37,7 +39,9 @@ class Quiz extends Component {
       wordsAfter: 0,
       word: words[i],
       userAnswer: '',
-      showAnswer: false
+      showAnswer: false,
+      score: this.isMatch() ? this.state.score + 1 : this.state.score,
+      questionsAnswered: this.state.questionsAnswered + 1
     }));
 
     this.focusInput();
@@ -173,6 +177,7 @@ class Quiz extends Component {
       <div className="Quiz">
         <br />
         {this.renderDevControls()}
+        <h2>{`${this.state.score}/${this.state.questionsAnswered}`}</h2>
         <h2>{this.state.word}</h2>
 
         <pre className="lyrics">{
